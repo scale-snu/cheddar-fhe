@@ -1,0 +1,17 @@
+.ipynb_checkpoints
+build/
+dist-prepared/
+backup/
+.vscode/
+/lib/libgtest.so
+cifar10_data/
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+_deps
+*~
