@@ -15,7 +15,7 @@ Cheddar significantly improves the performance of CKKS workloads when comparing 
 | WarpDrive [4] (A100 80GB) | 121                | 113                        | 5.88                    |
 | **Cheddar** (A100 80GB)   | 40.0 (4.28/3.03×)  | 51.9 (2.18×)               | 1.32 (6.50/4.45×)       |
 | **Cheddar** (H100 80GB)   | 31.2               | 40.7                       | 1.05                    |
-| **Cheddar** (RTX 4090)    | 31.6               | 29.9                       | out-of-memory           |
+| **Cheddar** (RTX 5090)    | 22.1               | 25.9                       | 0.72                    |
 
 (Cheddar parameters: [bootparam_40.json](./parameters/bootparam_40.json), PCIe GPU versions used)
 
@@ -74,7 +74,7 @@ CMD ["/bin/bash"]
 ## Contact
 
 Please use GitHub issues for any suggestions.
-For other inquiries, you can take a look at our [arXiv paper](https://arxiv.org/abs/2407.13055) (to be updated) or contact the authors by e-mail:
+For other inquiries, you can take a look at our [ASPLOS 2026 paper](https://doi.org/10.1145/3760250.3762223) (or [arXiv version](https://arxiv.org/abs/2407.13055)) or contact the authors by e-mail:
 * Jongmin Kim (firstname.lastname@snu.ac.kr)
 * Wonseok Choi (firstname.lastname@snu.ac.kr)
 
@@ -91,14 +91,15 @@ https://docs.nvidia.com/cuda/eula/index.html
 * GoogleTest (licensed under the BSD 3-Clause License): https://github.com/google/googletest
 * JsonCpp (licensed under the MIT License / public domain software): https://github.com/open-source-parsers/jsoncpp
 
-When using Cheddar (or even Cheddar parameters in the [parameters folder](./parameters)), please cite the following [arXiv paper](https://arxiv.org/abs/2407.13055):
+When using Cheddar (or even Cheddar parameters in the [parameters folder](./parameters)), please cite the following paper:
 ```
-@article{arxiv-2024-cheddar,
-  title = {Cheddar: A Swift Fully Homomorphic Encryption Library for {CUDA} {GPUs}},
-  author = {Kim, Jongmin and Choi, Wonseok and Ahn, {Jung Ho}},
-  journal = {arXiv preprint},
-  year = {2024},
-  doi = {10.48550/arXiv.2407.13055}
+@inproceedings{asplos-2026-cheddar,
+  author = {Choi, Wonseok and Kim, Jongmin and Ahn, Jung Ho},
+  title = {Cheddar: {A} Swift Fully Homomorphic Encryption Library Designed for {GPU} Architectures},
+  booktitle = {Proceedings of the 31st ACM International Conference on Architectural Support for Programming Languages and Operating Systems},
+  year = {2025},
+  url = {https://doi.org/10.1145/3760250.3762223},
+  doi = {10.1145/3760250.3762223}
 }
 ```
 
