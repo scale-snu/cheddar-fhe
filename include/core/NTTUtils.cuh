@@ -155,6 +155,7 @@ __device__ __inline__ void MultiRadixNTT_OT(make_signed_t<word> *local,
   constexpr int offset = ((1 << (stage - 1)) - 1) * num_outer_blocks;
   // load last twiddle factor
   if constexpr (kExtendedOT) {
+#pragma unroll
     for (int i = 0; i < num_tw_factor; i++) {
       twiddle_factor_set[i + offset] =
           basic::detail::__mult_montgomery_lazy<word>(
@@ -162,10 +163,12 @@ __device__ __inline__ void MultiRadixNTT_OT(make_signed_t<word> *local,
     }
 
     // compute all twiddle factors with the last stage twiddle factor
+#pragma unroll
     for (int curr_stage = stage; curr_stage > 1; curr_stage--) {
       int src_offset = ((1 << (curr_stage - 1)) - 1) * num_outer_blocks;
       int dst_offset = ((1 << (curr_stage - 2)) - 1) * num_outer_blocks;
       int curr_stage_tw_num = ((1 << (curr_stage - 1))) * num_outer_blocks;
+#pragma unroll
       for (int i = 0; i < curr_stage_tw_num / 2; i++) {
         word operand = twiddle_factor_set[src_offset + i * 2];
         twiddle_factor_set[dst_offset + i] =
@@ -175,12 +178,15 @@ __device__ __inline__ void MultiRadixNTT_OT(make_signed_t<word> *local,
     }
 
     // compute with the twiddle factor set
+#pragma unroll
     for (int curr_stage = 1; curr_stage <= stage; curr_stage++) {
       int block_size = (1 << (stage - curr_stage + 1));
       int num_blocks = (radix / block_size);
       int tw_offset = ((1 << (curr_stage - 1)) - 1) * num_outer_blocks;
+#pragma unroll
       for (int curr_block = 0; curr_block < num_blocks; curr_block++) {
         int stride = block_size / 2;
+#pragma unroll
         for (int i = 0; i < stride; i++) {
           ButterflyNTT(local[curr_block * block_size + i],
                        local[curr_block * block_size + i + stride],
@@ -189,18 +195,22 @@ __device__ __inline__ void MultiRadixNTT_OT(make_signed_t<word> *local,
       }
     }
   } else {
+#pragma unroll
     for (int curr_stage = 1; curr_stage <= stage; curr_stage++) {
       int block_size = (1 << (stage - curr_stage + 1));
       int num_blocks = (radix / block_size);
       if (curr_stage == stage) {
         word OT_factors[num_tw_factor];
+#pragma unroll
         for (int i = 0; i < num_tw_factor; i++) {
           OT_factors[i] = basic::detail::__mult_montgomery_lazy<word>(
               w[lsbIdx + i], static_cast<signed_word>(w_msb[msbIdx]), q, q_inv);
         }
 
+#pragma unroll
         for (int curr_block = 0; curr_block < num_blocks; curr_block++) {
           int stride = block_size / 2;
+#pragma unroll
           for (int i = 0; i < stride; i++) {
             ButterflyNTT(local[curr_block * block_size + i],
                          local[curr_block * block_size + i + stride],
@@ -209,8 +219,10 @@ __device__ __inline__ void MultiRadixNTT_OT(make_signed_t<word> *local,
         }
         continue;
       }
+#pragma unroll
       for (int curr_block = 0; curr_block < num_blocks; curr_block++) {
         int stride = block_size / 2;
+#pragma unroll
         for (int i = 0; i < stride; i++) {
           ButterflyNTT(local[curr_block * block_size + i],
                        local[curr_block * block_size + i + stride],
@@ -265,6 +277,7 @@ __device__ __inline__ void MultiRadixINTT_OT(make_signed_t<word> *local,
   constexpr int num_tw_factor = (1 << (stage - 1)) * num_outer_blocks;
   if constexpr (kExtendedOT) {
     // load first twiddle factor
+#pragma unroll
     for (int i = 0; i < num_tw_factor; i++) {
       twiddle_factor_set[i] = basic::detail::__mult_montgomery_lazy<word>(
           w[lsbIdx + i], static_cast<signed_word>(w_msb[msbIdx]), q, q_inv);
@@ -272,8 +285,10 @@ __device__ __inline__ void MultiRadixINTT_OT(make_signed_t<word> *local,
 
     // compute all twiddle factors with the first stage twiddle factor
     int accum = 0;
+#pragma unroll
     for (int curr_stage = 1; curr_stage < stage; curr_stage++) {
       int curr_stage_tw_num = num_outer_blocks * (1 << (stage - curr_stage));
+#pragma unroll
       for (int i = 0; i < curr_stage_tw_num / 2; i++) {
         word operand = twiddle_factor_set[accum + i * 2];
         twiddle_factor_set[curr_stage_tw_num + accum + i] =
@@ -283,12 +298,15 @@ __device__ __inline__ void MultiRadixINTT_OT(make_signed_t<word> *local,
       accum += curr_stage_tw_num;
     }
     accum = 0;
+#pragma unroll
     for (int curr_stage = 1; curr_stage <= stage; curr_stage++) {
       int block_size = (1 << curr_stage);
       int num_blocks = (radix / block_size);
       // int tw_offset = accum;
+#pragma unroll
       for (int curr_block = 0; curr_block < num_blocks; curr_block++) {
         int stride = block_size / 2;
+#pragma unroll
         for (int i = 0; i < stride; i++) {
           ButterflyINTT(local[curr_block * block_size + i],
                         local[curr_block * block_size + i + stride],
@@ -298,17 +316,21 @@ __device__ __inline__ void MultiRadixINTT_OT(make_signed_t<word> *local,
       accum += num_blocks;
     }
   } else {
+#pragma unroll
     for (int curr_stage = 1; curr_stage <= stage; curr_stage++) {
       int block_size = (1 << curr_stage);
       int num_blocks = (radix / block_size);
       if (curr_stage == 1) {
         word OT_factors[num_tw_factor];
+#pragma unroll
         for (int i = 0; i < num_tw_factor; i++) {
           OT_factors[i] = basic::detail::__mult_montgomery_lazy<word>(
               w[lsbIdx + i], static_cast<signed_word>(w_msb[msbIdx]), q, q_inv);
         }
+#pragma unroll
         for (int curr_block = 0; curr_block < num_blocks; curr_block++) {
           int stride = block_size / 2;
+#pragma unroll
           for (int i = 0; i < stride; i++) {
             ButterflyINTT(local[curr_block * block_size + i],
                           local[curr_block * block_size + i + stride],
@@ -317,8 +339,10 @@ __device__ __inline__ void MultiRadixINTT_OT(make_signed_t<word> *local,
         }
         continue;
       }
+#pragma unroll
       for (int curr_block = 0; curr_block < num_blocks; curr_block++) {
         int stride = block_size / 2;
+#pragma unroll
         for (int i = 0; i < stride; i++) {
           ButterflyINTT(local[curr_block * block_size + i],
                         local[curr_block * block_size + i + stride],
