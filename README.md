@@ -99,7 +99,7 @@ https://docs.nvidia.com/cuda/eula/index.html
 When using Cheddar (or even Cheddar parameters in the [parameters folder](./parameters)), please cite the following paper:
 ```
 @inproceedings{asplos-2026-cheddar,
-  author = {Choi, Wonseok and Kim, Jongmin and Ahn, Jung Ho},
+  author = {Choi, Wonseok and Kim, Jongmin and Ahn, {Jung Ho}},
   title = {Cheddar: {A} Swift Fully Homomorphic Encryption Library Designed for {GPU} Architectures},
   booktitle = {Proceedings of the 31st ACM International Conference on Architectural Support for Programming Languages and Operating Systems},
   year = {2025},
