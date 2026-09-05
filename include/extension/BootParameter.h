@@ -19,7 +19,7 @@ struct BootParameter {
    * lowest level). Do not modify if you do not know what you are doing.
    */
   BootParameter(int max_level, int num_cts_levels, int num_stc_levels,
-                int log_message_ratio = 5);
+                int log_message_ratio = 5, int num_double_angle = 3);
 
   const int max_level_;
   const int num_cts_levels_;
