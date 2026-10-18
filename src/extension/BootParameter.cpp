@@ -20,6 +20,8 @@ namespace {
 //    interpolation would need 63 coefficients here, one more level.
 // Coefficients must be refit when changing num_double_angle: rescaling the
 // k = 3 series loses about two digits of bootstrap precision.
+// evalmod_coeffs.py at the repository root regenerates both sets, and
+// `python3 evalmod_coeffs.py check` compares them with the values below.
 std::vector<double> SelectModCoefficients(int num_double_angle) {
   if (num_double_angle == 3) {
     return {
@@ -51,8 +53,7 @@ std::vector<double> SelectModCoefficients(int num_double_angle) {
           2.8680817151628213364e-08, 0.0,
           -2.3253594374654767366e-09, 0.0};
   }
-  // Unsupported: fit p(t) = (0.5/pi)^(1/2^k) cos(4 pi t) on the subdomain
-  // required by your secret's rounding range and add it here.
+  // Unsupported: generate coefficients with evalmod_coeffs.py and add them.
   throw std::invalid_argument(
       "BootParameter: no EvalMod coefficients for num_double_angle = " +
       std::to_string(num_double_angle));
