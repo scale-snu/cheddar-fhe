@@ -8,16 +8,18 @@ namespace cheddar {
 
 namespace {
 
-// Coefficients of the EvalMod polynomial for each supported num_double_angle.
-// The polynomial is a Chebyshev-basis (domain [-1, 1]) approximation of
-//   p(t) = (0.5/pi)^(1/2^k) * cos(2*pi*initial_K*t),   initial_K = 2
-// fit on the restricted central subdomain required by the target secret's
-// bootstrap rounding range |K| <= actual_K = 2^k * initial_K:
-//  - k = 3 (shipped): fit for sparse h <= 128 secrets (|K| <= 16)
-//  - k = 4 (added  ): weighted-LS fit on |t| <= 0.85, degree 31, protects
-//                     |K| <= 27 (sparse h = 256); chain error ~2.6e-11.
-// NOTE: coefficients must be refit when changing num_double_angle; a naive
-// rescale of the k = 3 series loses ~2 digits of bootstrap precision.
+// Coefficients of the EvalMod polynomial for each supported num_double_angle
+// k, in the Chebyshev basis on [-1, 1]. The polynomial approximates
+//   p(t) = (0.5/pi)^(1/2^k) * cos(2*pi*initial_K*t),   initial_K = 2,
+// at the inputs EvalMod gives it, which lie close to (K - 0.25) / actual_K
+// for the bootstrap rounding integers K, |K| < actual_K = 2^k * initial_K:
+//  - k = 3 (shipped): Han-Ki interpolation, as in Lattigo's CosDiscrete
+//    (degree 30, nodes within 2^-5 of every |K| <= 15, even terms kept).
+//  - k = 4 (added): even least-squares fit with Chebyshev weight on
+//    |t| <= 0.85, degree 31, good for |K| <= 27 (sparse h = 256). Han-Ki
+//    interpolation would need 63 coefficients here, one more level.
+// Coefficients must be refit when changing num_double_angle: rescaling the
+// k = 3 series loses about two digits of bootstrap precision.
 std::vector<double> SelectModCoefficients(int num_double_angle) {
   if (num_double_angle == 3) {
     return {
@@ -68,7 +70,6 @@ BootParameter::BootParameter(int max_level, int num_cts_levels,
       mod_coefficients_{SelectModCoefficients(num_double_angle)},
       num_double_angle_{num_double_angle},
       initial_K_{2} {}
-
 
 int BootParameter::GetNumEvalModLevels() const {
   return Log2Ceil(mod_coefficients_.size()) + num_double_angle_;
