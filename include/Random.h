@@ -230,12 +230,17 @@ class Random {
     std::mutex mutex;
     SharedState() {
       // A forked child must not continue the parent's keystream.
-      pthread_atfork([] { Shared().mutex.lock(); },
-                     [] { Shared().mutex.unlock(); },
-                     [] {
-                       Shared().gen.Reseed();
-                       Shared().mutex.unlock();
-                     });
+      int error = pthread_atfork([] { Shared().mutex.lock(); },
+                                 [] { Shared().mutex.unlock(); },
+                                 [] {
+                                   Shared().gen.Reseed();
+                                   Shared().mutex.unlock();
+                                 });
+      if (error != 0) {
+        std::cerr << "Random: cannot register fork handlers: "
+                  << std::strerror(error) << "; aborting" << std::endl;
+        std::abort();
+      }
     }
   };
   static SharedState &Shared() {

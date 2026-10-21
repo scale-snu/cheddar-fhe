@@ -145,7 +145,10 @@ TEST(RandomTest, DiscreteNormalMomentsAndClamp) {
   for (int x : v) var += (x - mean) * (x - mean);
   var /= n;
   EXPECT_NEAR(mean, 0, 6 * sigma / std::sqrt(n));
-  EXPECT_NEAR(var, sigma * sigma + 1.0 / 12, 0.02);  // rounding adds 1/12
+  const double expected_var = sigma * sigma + 1.0 / 12;  // rounding adds 1/12
+  // Approximate standard error of the variance for a Gaussian sample.
+  const double var_standard_error = expected_var * std::sqrt(2.0 / (n - 1));
+  EXPECT_NEAR(var, expected_var, 6 * var_standard_error);
   EXPECT_LE(mx, static_cast<int>(std::llround(6 * sigma)));
 }
 
