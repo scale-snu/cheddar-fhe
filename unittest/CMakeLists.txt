@@ -18,6 +18,10 @@ add_compile_definitions(
   PARAM_DIR="${CMAKE_CURRENT_BINARY_DIR}"
 )
 
+add_executable(random_test RandomTest.cpp)
+target_include_directories(random_test PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(random_test PRIVATE gtest_main Threads::Threads)
+
 add_executable(basic_test BasicTest.cpp)
 target_link_libraries(basic_test
                       PRIVATE cheddar gtest_main nlohmann_json::nlohmann_json)
