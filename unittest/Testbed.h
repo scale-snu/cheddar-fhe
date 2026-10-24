@@ -208,9 +208,15 @@ class Testbed : public testing::TestWithParam<const char *> {
       Check(json_data["num_stc_levels"].is_number_integer(),
             "num_stc_levels should be an integer");
       int num_stc_levels = json_data["num_stc_levels"];
+      int num_double_angle = 3;
+      if (json_data.contains("num_double_angle")) {
+        Check(json_data["num_double_angle"].is_number_integer(),
+              "num_double_angle should be an integer");
+        num_double_angle = json_data["num_double_angle"];
+      }
       context_ = BootContext<word>::Create(
-          *param_,
-          BootParameter(param_->max_level_, num_cts_levels, num_stc_levels));
+          *param_, BootParameter(param_->max_level_, num_cts_levels,
+                                 num_stc_levels, 5, num_double_angle));
     } else {
       context_ = Context<word>::Create(*param_);
     }
